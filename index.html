@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admission JS Project</title>
+</head>
+<body>
+<!--Form-->
+<div>
+    <form id="dataForm" action="#">
+        <label for="uid">User Id: </label>
+        <input id="uid" name="uid" type="text">
+        <p class="error-messages" id="uid-error"></p>
+
+        <label for="fname">First Name: </label>
+        <input id="fname" name="fname" type="text">
+        <p class="error-messages" id="fname-error"></p>
+
+        <label for="lname">Last Name: </label>
+        <input id="lname" name="lname" type="text">
+        <p class="error-messages" id="lname-error"></p>
+
+        <label for="bday">Birthday: </label>
+        <input id="bday" name="bday" type="date">
+        <p class="error-messages" id="bday-error"></p>
+
+        <input type="button" onclick="validateValues()" value="Accept">
+    </form>
+
+    <div class="output" hidden>
+        <p id="output-text1"></p>
+        <p id="output-text2"></p>
+    </div>
+</div>
+
+<script>
+    // Setting max date in birthday datepicker
+    let today = new Date();
+    let dd = today.getDate();
+    let mm = today.getMonth() + 1;
+    let yyyy = today.getFullYear();
+
+    if (mm < 10) {
+        mm = '0' + mm;
+    }
+
+    dateString = yyyy + '-' + mm + '-' + dd;
+    document.querySelector('#bday').setAttribute('max', dateString);
+
+    // Function to validate UID
+    function validateUID(uid) {
+        let res = "";
+        if (uid.length < 8 || uid.length > 12) {
+            res += "Length must be between 8 to 12 characters. ";
+        }
+        if (uid.search(/[A-Z]/) === -1) {
+            res += "UserID must contain an uppercase letter.";
+        }
+        if (uid.search(/[a-z]/) === -1) {
+            res += "UserID must contain a lowercase letter. ";
+        }
+        if (uid.search(/\d/) === -1) {
+            res += "UserID must contain a number. ";
+        }
+        if (res.length !== 0) {
+            res = "* Invalid UserID. " + res;
+        }
+        return res;
+    }
+
+    // Function to validate first name, last name and birthday
+    function validateName(name) {
+        if (name.length === 0) {
+            return true;
+        }
+    }
+
+    // Function to calculate days difference between birthday and current date
+    function dateDiff(a) {
+        let timeDifference = today.getTime() - a.getTime();
+        return Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+    }
+    //Function to validate and process form
+    function validateValues() {
+        let uid = document.querySelector('#uid').value;
+        let fname = document.querySelector('#fname').value;
+        let lname = document.querySelector('#lname').value;
+        let birthday = document.querySelector('#bday').value;
+        let output = document.querySelector('.output');
+        let outputText1 = document.querySelector('#output-text1');
+        let outputText2 = document.querySelector('#output-text2');
+        let errors = document.querySelectorAll('.error-messages');
+
+        document.querySelector('#uid-error').innerHTML = validateUID(uid);
+        document.querySelector('#fname-error').innerHTML = (validateName(fname)) ? "* First name cannot be empty. " : "";
+        document.querySelector('#lname-error').innerHTML = (validateName(lname)) ? "* Last name cannot be empty. " : "";
+        document.querySelector('#bday-error').innerHTML = (validateName(birthday)) ? "* Please select your date of birth. " : "";
+
+        // Continue processing if no error
+        let allErrors = "";
+        errors.forEach(e => {
+            allErrors += e.innerHTML;
+        });
+
+        if (allErrors.length === 0) {
+            let birthdate = new Date(birthday + " 00:00");
+            let ageDays = dateDiff(birthdate);
+
+            let text = fname + " " + lname + ", you have been breathing for " + ageDays + " days!";
+            if (ageDays >= (365 * 18)) {
+                outputText1.innerHTML = text;
+            }
+            else {
+                outputText1.innerHTML = text + "<br>You are probably not old enough to take this class!";
+            }
+
+            let str = "";
+            let text2 = "";
+
+            for (let i = 1; i <= 20; i++) {
+                text2 += str.padStart(i, "x") + "<br>";
+            }
+
+            outputText2.innerHTML = text2;
+            output.removeAttribute("hidden");
+        }
+    }
+</script>
+
+<style>
+    label {
+        display: inline-block;
+        width: 10%;
+    }
+
+    #uid, #fname, #lname, #bday {
+        width: 20%;
+    }
+
+    .error-messages {
+        font-size: 8pt;
+        color: red;
+        margin-left: 10%;
+    }
+</style>
+</body>
+</html>
